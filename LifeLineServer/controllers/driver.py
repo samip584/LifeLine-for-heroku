@@ -72,7 +72,7 @@ def Sign_up_driver():
             return jsonify({'message': str(e.__dict__['orig'])})
         return driver_schema.jsonify(new_driver)
     else:
-        return jsonify({'message': 'Signup Unsuccessful invalid data'})
+        return jsonify({'message': 'x`up Unsuccessful invalid data'})
 
 
 
@@ -94,14 +94,13 @@ def update_driver_pic(contact):
         response.status_code = 400
         return response
 
-    pic_loc = os.path.join(basedir, "User_pics/driver",
-                           (driver.contact+file.filename[-4:]))
-    
     try:
         os.remove(driver.pic_location)
     except:
         print("new pic")
-
+    
+    pic_loc = os.path.join(basedir, "User_pics/driver",
+                           (driver.contact+file.filename[-4:]))
     file.save(pic_loc)
     driver.put_pic_loc(pic_loc)
     response = jsonify({'message': 'File successfully uploaded'})
