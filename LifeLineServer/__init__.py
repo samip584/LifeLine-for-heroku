@@ -11,12 +11,7 @@ app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SECRET_KEY'] = 'buzzgopa'
 # Database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://bzaayrszcpxigd:fc04129768348936a0687b4931fb96414c6452430495e0a9bd855717f43cd9d1@ec2-52-6-178-202.compute-1.amazonaws.com:5432/de039mjiokhkbg'
-
-# # Database
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://bzaayrszcpxigd:fc04129768348936a0687b4931fb96414c6452430495e0a9bd855717f43cd9d1@ec2-52-6-178-202.compute-1.amazonaws.com/LifelineDB' + \
-#     os.path.join(basedir, 'db.sqlite')
-
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://bzaayrszcpxigd:fc04129768348936a0687b4931fb96414c6452430495e0a9bd855717f43cd9d1@ec2-52-6-178-202.compute-1.amazonaws.com:5432/de039mjiokhkbg'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 

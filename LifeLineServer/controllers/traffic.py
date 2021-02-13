@@ -79,10 +79,10 @@ traffics_schema = TrafficSchema(many=True)
 def Sign_up_traffic():
     name = request.json['name']
     email = request.json['email']
-    contact = request.json['contact']
+    contact = str(request.json['contact'])
     password = request.json['password']
     email_regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
-    if(re.search(email_regex,email) and len(str(contact)) == 10 and len(password)>7): 
+    if(re.search(email_regex,email) and len(contact) == 10 and len(password)>7): 
         hashed_password = generate_password_hash(password, method='sha256')
         new_traffic = Traffic(name, email, contact, hashed_password)
         traffic_db.session.add(new_traffic)
@@ -120,7 +120,7 @@ def update_traffic_pic(contact):
         print("new pic")
 
     pic_loc = os.path.join(basedir, "User_pics/traffic",
-                           (str(traffic.contact)+file.filename[-4:]))
+                           (traffic.contact+file.filename[-4:]))
     file.save(pic_loc)
     traffic.put_pic_loc(pic_loc)
 
@@ -143,7 +143,7 @@ def get_traffics():
                 if name in user['name']:
                     final_result.append(user)
             if contact:
-                if str(contact) in str(user['contact']):
+                if str(contact) in user['contact']:
                     final_result.append(user)
     else:
         final_result = result

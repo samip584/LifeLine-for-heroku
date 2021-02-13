@@ -16,6 +16,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import jwt  # token ko lai
 from functools import wraps
 
+from sqlalchemy import exc
+
 from LifeLineServer.models import Driver, DriverSchema
 
 
@@ -57,10 +59,10 @@ def Sign_up_driver():
     name = request.json['name']
     driver_id = request.json['driver_id']
     email = request.json['email']
-    contact = request.json['contact']
+    contact = str(request.json['contact'])
     password = request.json['password']
     email_regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
-    if(re.search(email_regex,email) and len(str(contact)) == 10 and len(password)>7): 
+    if(re.search(email_regex,email) and len(contact) == 10 and len(password)>7): 
         hashed_password = generate_password_hash(password, method='sha256')
         new_driver = Driver(name, driver_id, email, contact, hashed_password)
         driver_db.session.add(new_driver)
@@ -93,7 +95,7 @@ def update_driver_pic(contact):
         return response
 
     pic_loc = os.path.join(basedir, "User_pics/driver",
-                           (str(driver.contact)+file.filename[-4:]))
+                           (driver.contact+file.filename[-4:]))
     
     try:
         os.remove(driver.pic_location)
@@ -117,10 +119,12 @@ def get_drivers():
     if (contact or name):
         for user in result:
             if name:
+                print('name')
                 if name in user['name']:
                     final_result.append(user)
             if contact:
-                if str(contact) in str(user['contact']):
+                print('contact') 
+                if str(contact) in user['contact']:
                     final_result.append(user)
     else:
         final_result = result
