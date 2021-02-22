@@ -3,10 +3,10 @@ from LifeLineServer import driver_db, traffic_db, driver_ma, traffic_ma
 # Driver Class/Model
 class Driver(driver_db.Model):
     did = driver_db.Column(driver_db.Integer, primary_key=True)
-    name = driver_db.Column(driver_db.String(200), unique=True)
+    name = driver_db.Column(driver_db.String(200))
     driver_id = driver_db.Column(driver_db.String(200), unique=True)
     email = driver_db.Column(driver_db.String(200), unique=True)
-    contact = driver_db.Column(driver_db.String(10), unique=True)
+    contact = driver_db.Column(driver_db.Integer, unique=True)
     password = driver_db.Column(driver_db.String(200))
     pic_location = driver_db.Column(driver_db.String(200))
     role = 'driver'
@@ -27,6 +27,9 @@ class Driver(driver_db.Model):
         self.email = email
         self.contact = contact
 
+    def update_password(self, password):
+        self.password = password
+
 
 # Driver Schema
 class DriverSchema(driver_ma.Schema):
@@ -38,9 +41,9 @@ class DriverSchema(driver_ma.Schema):
 # Traffic Class/Model
 class Traffic(traffic_db.Model):
     tid = traffic_db.Column(traffic_db.Integer, primary_key=True)
-    name = traffic_db.Column(traffic_db.String(100), unique=True)
+    name = traffic_db.Column(traffic_db.String(100))
     email = traffic_db.Column(traffic_db.String(200), unique=True)
-    contact = traffic_db.Column(traffic_db.String(10), unique=True)
+    contact = traffic_db.Column(traffic_db.Integer, unique=True)
     password = traffic_db.Column(traffic_db.String(200))
     pic_location = traffic_db.Column(traffic_db.String(200))
     role='traffic'
@@ -58,6 +61,9 @@ class Traffic(traffic_db.Model):
         self.name = name
         self.email = email
         self.contact = contact
+    
+    def update_password(self, password):
+        self.password = password
 
 
 # Traffic Schema
