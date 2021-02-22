@@ -87,7 +87,7 @@ def Sign_up_driver():
     name = request.json['name']
     driver_id = request.json['driver_id']
     email = request.json['email']
-    contact = request.json['contact']
+    contact = (request.json['contact'])
     password = request.json['password']
     email_regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
     if(re.search(email_regex,email) and len(str(contact)) == 10 and len(password)>7): 
