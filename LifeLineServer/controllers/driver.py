@@ -9,7 +9,7 @@ from PIL import Image
 from io import BytesIO
 import base64
 import re 
-
+from sqlalchemy import exc
 
 # password lai hash garna
 from werkzeug.security import generate_password_hash, check_password_hash
