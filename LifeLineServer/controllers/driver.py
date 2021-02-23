@@ -74,7 +74,14 @@ def login():
     if not driver:
         return make_response('Phone number is not registered yet', 401, {'WWW-Authenticate': 'Basic realm = "Login required!"'})
     if check_password_hash(driver.password, auth.password):
-        token = jwt.encode({'id': driver.contact, 'role': "driver"}, app.config['SECRET_KEY'])
+        token = jwt.encode(
+            {
+            'id': driver.contact,
+            'role': "driver",
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=2)
+            },
+            app.config['SECRET_KEY']
+        )
         return jsonify({'token': token.decode('UTF-8'), 'contact': driver.contact, 'name': driver.name, 'role': 'driver'})
 
     return make_response('Phone number and Password does not match', 401, {'WWW-Authenticate': 'Basic realm = "Login required!"'})
