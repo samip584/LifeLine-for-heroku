@@ -95,7 +95,7 @@ def Sign_up_traffic():
     password = request.json['password']
     email_regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
     if(re.search(email_regex,email) and len(str(contact)) == 10 and len(password)>7): 
-        hashed_password = generate_password_hash(password, method='sha256')
+        hashed_password = generate_password_hash(password, method='sha256:100')
         new_traffic = Traffic(name, email, contact, hashed_password)
         traffic_db.session.add(new_traffic)
         try:
@@ -224,7 +224,7 @@ def update_traffic_password(contact):
         os.rename(traffic.pic_location,pic_loc)
         traffic.put_pic_loc(pic_loc)
 
-    password = hashed_password = generate_password_hash(request.json['password'], method='sha256')
+    password = hashed_password = generate_password_hash(request.json['password'], method='sha256:100')
     traffic.update_password(password)
     traffic_db.session.commit()
 
