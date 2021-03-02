@@ -52,7 +52,7 @@ driver_schema = DriverSchema()
 drivers_schema = DriverSchema(many=True)
 
 # token auth
-@app.route('/driver_check_token', methods=['GET'])
+@app.route('/driver_check_token', methods=['POST'])
 @token_required
 def driver_check_token(user):
     if user:

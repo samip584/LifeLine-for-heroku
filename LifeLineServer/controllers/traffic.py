@@ -47,7 +47,7 @@ traffic_schema = TrafficSchema()
 traffics_schema = TrafficSchema(many=True)
 
 # token auth
-@app.route('/traffic_check_token', methods=['GET'])
+@app.route('/traffic_check_token', methods=['POST'])
 @token_required
 def traffic_check_token(user):
     if user:
