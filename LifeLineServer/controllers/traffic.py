@@ -122,15 +122,11 @@ def update_traffic_pic(contact):
         response = jsonify({'err': 'png or jpg not selected'})
         return response , 400
 
-    try:
-        os.remove(traffic.pic_location)
-    except:
-        print("new pic")
-
-    pic_loc = os.path.join(basedir, "User_pics/traffic",
-                           (str(traffic.contact)+file.filename[-4:]))
-    file.save(pic_loc)
-    traffic.put_pic_loc(pic_loc)
+    image = Image.open(file)
+    buff = BytesIO()
+    image.save(buff, format="JPEG")
+    img_str = base64.b64encode(buff.getvalue())
+    traffic.put_pic(img_str)
 
     response = jsonify({'message': 'File successfully uploaded'})
     traffic_db.session.commit()
@@ -167,8 +163,8 @@ def get_traffics():
 @app.route('/traffic_pic/<contact>', methods=['GET'])
 def get_traffic_pic(contact):
     traffic = Traffic.query.filter_by(contact=contact).first()
-    if   traffic.pic_location:
-        return send_file(traffic.pic_location)
+    if  traffic.pic:
+        return b'data:image/jpg;base64,'+traffic.pic
     else:
         response = jsonify({'err': 'Image not found'})
         return response , 404
@@ -177,11 +173,14 @@ def get_traffic_pic(contact):
 @app.route('/traffic_small_pic/<contact>', methods=['GET'])
 def traffic_small_pic(contact):
     traffic = Traffic.query.filter_by(contact=contact).first()
-    if (not traffic.pic_location):
+    if (not traffic.pic):
         response = jsonify({'err': 'Image not found'})
         return response, 404
-        
-    image = Image.open(traffic.pic_location)
+    
+    msg = base64.b64decode(traffic.pic)
+    buf = BytesIO(msg)
+
+    image = Image.open(buf)
     new_image = image.resize((100, 100))
     buff = BytesIO()
     new_image.save(buff, format="JPEG")
@@ -197,12 +196,6 @@ def update_traffic(contact):
     if not traffic:
         response = jsonify({'err': 'no traffic found'})
         return response, 404
-
-    if traffic.contact != request.json['contact']:
-        pic_loc = os.path.join(basedir, "User_pics/traffic",
-                           (str(request.json['contact'])+traffic.pic_location[-4:]))
-        os.rename(traffic.pic_location,pic_loc)
-        traffic.put_pic_loc(pic_loc)
     traffic.update_data(request.json['name'], request.json['email'], request.json['contact'])
     traffic_db.session.commit()
 
@@ -218,12 +211,6 @@ def update_traffic_password(contact):
         response = jsonify({'err': 'no traffic found'})
         return response, 404
 
-    if traffic.contact != request.json['contact']:
-        pic_loc = os.path.join(basedir, "User_pics/traffic",
-                           (str(request.json['contact'])+traffic.pic_location[-4:]))
-        os.rename(traffic.pic_location,pic_loc)
-        traffic.put_pic_loc(pic_loc)
-
     password = hashed_password = generate_password_hash(request.json['password'], method='sha256')
     traffic.update_password(password)
     traffic_db.session.commit()
@@ -236,10 +223,6 @@ def delete_traffic(contact):
     traffic = Traffic.query.filter_by(contact=contact).first()
     if not traffic:
         return jsonify({'err': 'no traffic found'}), 404
-    try:
-        os.remove(traffic.pic_location)
-    except:
-        print("no_pic-")
     traffic_db.session.delete(traffic)
     traffic_db.session.commit()
     return traffic_schema.jsonify(traffic)

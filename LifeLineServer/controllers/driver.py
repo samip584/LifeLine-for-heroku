@@ -126,16 +126,11 @@ def update_driver_pic(contact):
         response = jsonify({'err': 'png or jpg not selected'})
         return response , 400
 
-    pic_loc = os.path.join(basedir, "User_pics/driver",
-                           (str(driver.contact)+file.filename[-4:]))
-    
-    try:
-        os.remove(driver.pic_location)
-    except:
-        print("new pic")
-
-    file.save(pic_loc)
-    driver.put_pic_loc(pic_loc)
+    image = Image.open(file)
+    buff = BytesIO()
+    image.save(buff, format="JPEG")
+    img_str = base64.b64encode(buff.getvalue())
+    driver.put_pic(img_str)
     response = jsonify({'message': 'File successfully uploaded'})
     driver_db.session.commit()
     return response
@@ -166,8 +161,8 @@ def get_drivers():
 
 def get_driver_pic(contact):
     driver = Driver.query.filter_by(contact=contact).first()
-    if driver.pic_location:
-        return send_file(driver.pic_location)
+    if driver.pic:
+        return b'data:image/jpg;base64,'+driver.pic
     else:
         return jsonify({'err': 'Image not found'}), 404
 
@@ -175,9 +170,13 @@ def get_driver_pic(contact):
 @app.route('/driver_small_pic/<contact>', methods=['GET'])
 def get_driver_small_pic(contact):
     driver = Driver.query.filter_by(contact=contact).first()
-    if (not (driver.pic_location)):
+    if (not driver.pic):
         return jsonify({'err': 'Image not found'}), 404
-    image = Image.open(driver.pic_location)
+
+    msg = base64.b64decode(driver.pic)
+    buf = BytesIO(msg)
+
+    image = Image.open(buf)
     new_image = image.resize((100, 100))
     buff = BytesIO()
     new_image.save(buff, format="JPEG")
@@ -200,11 +199,6 @@ def update_driver(contact):
 
     if not driver:
         return jsonify({'err': 'no driver found'}), 404
-    if driver.contact != request.json['contact']:
-        pic_loc = os.path.join(basedir, "User_pics/driver",
-                           (str(request.json['contact'])+driver.pic_location[-4:]))
-        os.rename(driver.pic_location,pic_loc)
-        driver.put_pic_loc(pic_loc)
     driver.update_data(request.json['name'], request.json['driver_id'], request.json['email'], request.json['contact'])
     driver_db.session.commit()
 
@@ -220,12 +214,6 @@ def update_driver_password(contact):
         response = jsonify({'err': 'no driver found'})
         return response, 404
 
-    if driver.contact != request.json['contact']:
-        pic_loc = os.path.join(basedir, "User_pics/driver",
-                           (str(request.json['contact'])+driver.pic_location[-4:]))
-        os.rename(driver.pic_location,pic_loc)
-        driver.put_pic_loc(pic_loc)
-
     password = hashed_password = generate_password_hash(request.json['password'], method='sha256')
     driver.update_password(password)
     driver_db.session.commit()
@@ -237,10 +225,6 @@ def update_driver_password(contact):
 #@token_required
 def delete_driver(contact):
     driver = Driver.query.filter_by(contact=contact).first()
-    try:
-        os.remove(driver.pic_location)
-    except:
-        print("no_pic-")
     if not driver:
         return jsonify({'err': 'no driver found'}), 404
     driver_db.session.delete(driver)

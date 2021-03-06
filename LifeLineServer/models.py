@@ -8,7 +8,7 @@ class Driver(driver_db.Model):
     email = driver_db.Column(driver_db.String(200), unique=True)
     contact = driver_db.Column(driver_db.String(10), unique=True)
     password = driver_db.Column(driver_db.String(200))
-    pic_location = driver_db.Column(driver_db.String(200))
+    pic = driver_db.Column(driver_db.LargeBinary)
     role = 'driver'
 
     def __init__(self, name, driver_id, email, contact, password):
@@ -18,8 +18,8 @@ class Driver(driver_db.Model):
         self.contact = contact
         self.password = password
 
-    def put_pic_loc(self, pic_location):
-        self.pic_location = pic_location
+    def put_pic(self, pic):
+        self.pic = pic
 
     def update_data(self, name, driver_id, email, contact):
         self.name = name
@@ -35,7 +35,7 @@ class Driver(driver_db.Model):
 class DriverSchema(driver_ma.Schema):
     class Meta:
         fields = ('id', 'name', 'driver_id', 'email',
-                  'contact', 'password', 'pic_location', 'role')
+                  'contact', 'password', 'pic', 'role')
 
 
 # Traffic Class/Model
@@ -45,7 +45,7 @@ class Traffic(traffic_db.Model):
     email = traffic_db.Column(traffic_db.String(200), unique=True)
     contact = driver_db.Column(driver_db.String(10), unique=True)
     password = traffic_db.Column(traffic_db.String(200))
-    pic_location = traffic_db.Column(traffic_db.String(200))
+    pic = traffic_db.Column(traffic_db.LargeBinary)
     role='traffic'
 
     def __init__(self, name, email, contact, password):
@@ -54,8 +54,8 @@ class Traffic(traffic_db.Model):
         self.contact = contact
         self.password = password
 
-    def put_pic_loc(self, pic_location):
-        self.pic_location = pic_location
+    def put_pic(self, pic):
+        self.pic = pic
 
     def update_data(self, name, email, contact):
         self.name = name
@@ -69,4 +69,4 @@ class Traffic(traffic_db.Model):
 # Traffic Schema
 class TrafficSchema(traffic_ma.Schema):
     class Meta:
-        fields = ('id', 'name', 'email', 'contact', 'password', 'pic_location', 'role')
+        fields = ('id', 'name', 'email', 'contact', 'password', 'pic', 'role')
