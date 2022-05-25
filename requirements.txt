@@ -21,7 +21,7 @@ marshmallow-sqlalchemy==0.24.2
 Pillow==8.1.0
 psycopg2==2.8.6
 pycparser==2.20
-PyJWT==1.7.1
+PyJWT==2.4.0
 python-engineio==4.0.0
 python-socketio==5.0.4
 six==1.15.0
